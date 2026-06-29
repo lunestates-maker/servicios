@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#f5f5f7;color:#1c1c1e;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+
+.deco{position:fixed;pointer-events:none;z-index:0;user-select:none}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(5deg)}}
+
+header{position:relative;z-index:10;padding:2.5rem 1.5rem 1.25rem;text-align:center}
+.logo{font-size:44px;font-weight:900;letter-spacing:-.03em;color:#1c1c1e;line-height:1;text-transform:uppercase}
+.logo span{color:#38bdf8}
+.tagline{font-size:11px;letter-spacing:.2em;color:#aaa;margin-top:.4rem;text-transform:uppercase}
+
+nav{position:relative;z-index:10;display:flex;justify-content:center;padding:0 1.5rem 1.25rem}
+.tab-wrap{background:#e5e5ea;border-radius:12px;padding:3px;display:inline-flex;gap:2px}
+.tab{padding:.45rem 1.4rem;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:#888;border-radius:10px;transition:all .2s}
+.tab.active{background:#fff;color:#1c1c1e;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+main{position:relative;z-index:10;max-width:680px;margin:0 auto;padding:0 1.25rem 4rem}
+
+.section{display:none}
+.section.active{display:block}
+
+.sec-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#aaa;margin:1.5rem 0 .5rem .25rem}
+.sec-label:first-child{margin-top:.25rem}
+
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.item{border:none;border-radius:14px;padding:.75rem 1rem;cursor:pointer;display:flex;align-items:center;gap:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07);transition:all .18s}
+.item:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.item.sel{background:#e0f2fe;box-shadow:0 0 0 2px #38bdf8}
+.check{width:18px;height:18px;border-radius:50%;border:1.5px solid #ddd;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff;transition:all .18s}
+.item.sel .check{background:#38bdf8;border-color:#38bdf8}
+.item-label{font-size:12px;color:#1c1c1e;line-height:1.35;font-weight:500}
+.item-price{font-size:10px;color:#aaa;margin-top:2px}
+.item.sel .item-price{color:#0ea5e9}
+
+.summary{background:#fff;border-radius:20px;padding:1.25rem;margin-top:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.sum-head{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#aaa;margin-bottom:1rem}
+.sum-empty{font-size:13px;color:#ccc}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;color:#1c1c1e;padding:3px 0}
+.sum-row span:last-child{color:#aaa}
+.divider{border:none;border-top:1px solid #f0f0f0;margin:.75rem 0}
+.total-row{display:flex;justify-content:space-between;align-items:baseline}
+.total-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa}
+.total-num{font-size:30px;font-weight:900;color:#1c1c1e;letter-spacing:-.02em}
+.wa-btn{display:inline-flex;align-items:center;gap:8px;margin-top:1.1rem;padding:.7rem 1.25rem;border-radius:50px;background:#25D366;color:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;transition:opacity .15s;box-shadow:0 2px 10px rgba(37,211,102,.35)}
+.wa-btn:hover{opacity:.85}
+.wa-btn svg{width:16px;height:16px;fill:white;flex-shrink:0}
+.none-hint{font-size:12px;color:#ccc;margin-top:.75rem}
+
+.acc{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.acc-btn{width:100%;background:transparent;border:none;padding:.9rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:background .15s}
+.acc-btn:hover{background:#fafafa}
+.acc-name{font-size:13px;font-weight:700;color:#1c1c1e;letter-spacing:.01em}
+.acc-tag{font-size:9px;letter-spacing:.12em;color:#aaa;margin-top:2px;text-transform:uppercase}
+.acc-arrow{font-size:18px;color:#ccc;transition:transform .22s;flex-shrink:0;line-height:1}
+.acc-arrow.open{transform:rotate(180deg)}
+.acc-body{display:none;padding:.5rem 1rem 1rem;border-top:1px solid #f5f5f7}
+.acc-body.open{display:block}
+.det{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#888;padding:4px 0;line-height:1.5}
+.det::before{content:"·";color:#ccc;flex-shrink:0;font-size:16px;line-height:1.2}
+</style>
+</head>
+<body>
+
+<div class="deco" style="top:6%;left:3%;color:#38bdf8;font-size:22px;animation:float 6s ease-in-out infinite;animation-delay:0s">★</div>
+<div class="deco" style="top:12%;right:5%;color:#fde047;font-size:14px;animation:float 6s ease-in-out infinite;animation-delay:1.2s">✦</div>
+<div class="deco" style="top:30%;right:3%;color:#38bdf8;font-size:18px;animation:float 6s ease-in-out infinite;animation-delay:2s">✦</div>
+<div class="deco" style="top:50%;left:2%;color:#fde047;font-size:20px;animation:float 6s ease-in-out infinite;animation-delay:.7s">★</div>
+<div class="deco" style="top:68%;right:4%;color:#38bdf8;font-size:12px;animation:float 6s ease-in-out infinite;animation-delay:3s">★</div>
+<div class="deco" style="top:80%;left:4%;color:#fde047;font-size:16px;animation:float 6s ease-in-out infinite;animation-delay:1.8s">✦</div>
+<div class="deco" style="top:88%;right:6%;color:#38bdf8;font-size:24px;animation:float 6s ease-in-out infinite;animation-delay:2.5s">★</div>
+
+<header>
+  <div class="logo">LUNE<span>STATE</span>S</div>
+  <div class="tagline">diseño para estudios de danza · buenos aires</div>
+</header>
+
+<nav>
+  <div class="tab-wrap">
+    <button class="tab active" onclick="switchTab('config',this)">Armá tu pack</button>
+    <button class="tab" onclick="switchTab('info',this)">¿Qué incluye?</button>
+  </div>
+</nav>
+
+<main>
+  <div class="section active" id="config">
+    <div class="sec-label">Identidad</div>
+    <div class="items-grid" id="g-id"></div>
+    <div class="sec-label">Redes sociales</div>
+    <div class="items-grid" id="g-redes"></div>
+    <div class="sec-label">Eventos</div>
+    <div class="items-grid" id="g-eventos"></div>
+    <div class="sec-label">Merch</div>
+    <div class="items-grid" id="g-merch"></div>
+    <div class="summary">
+      <div class="sum-head">Tu pack</div>
+      <div id="sum-list"><span class="sum-empty">Nada seleccionado aún.</span></div>
+      <hr class="divider">
+      <div class="total-row">
+        <span class="total-label">Total estimado</span>
+        <span class="total-num" id="total">$0</span>
+      </div>
+      <div id="wa-wrap"><p class="none-hint">Seleccioná al menos un ítem.</p></div>
+    </div>
+  </div>
+
+  <div class="section" id="info">
+    <div id="accordions" style="margin-top:.25rem"></div>
+  </div>
+</main>
+
+<script>
+const catalog={
+  "g-id":[
+    {id:"logo-paleta",label:"Logo + paleta",price:120000},
+    {id:"logo-sistema",label:"Logo + sistema de marca",price:220000},
+    {id:"marca-completa",label:"Sistema de marca completo",price:350000},
+  ],
+  "g-redes":[
+    {id:"posts2",label:"2 posts para Instagram",price:20000},
+    {id:"posts4",label:"4 posts para Instagram",price:40000},
+    {id:"stories",label:"Stories y highlights",price:35000},
+    {id:"reels",label:"Edición de reels",price:30000},
+  ],
+  "g-eventos":[
+    {id:"flyer1",label:"1 flyer de evento",price:20000},
+    {id:"flyer2",label:"2 flyers de evento",price:35000},
+  ],
+  "g-merch":[
+    {id:"merch1",label:"1 producto de merch",price:40000},
+    {id:"merch3",label:"Hasta 3 productos",price:90000},
+  ],
+};
+
+const infoItems=[
+  {title:"Logo + paleta de colores",tag:"Identidad",details:["Diseño de logotipo (hasta 3 propuestas)","Paleta de colores primaria y secundaria","Tipografías definidas","Archivos finales en PNG, JPG y PDF","2 revisiones incluidas"]},
+  {title:"Logo + sistema de marca",tag:"Identidad",details:["Todo lo del pack logo + paleta","Versiones del logo (horizontal, vertical, isotipo)","Manual de uso básico","Aplicaciones básicas (perfil IG, highlight covers)","3 revisiones incluidas"]},
+  {title:"Sistema de marca completo",tag:"Identidad",details:["Todo lo del logo + sistema de marca","Manual de marca extendido","Aplicaciones adicionales (flyer, merch, firma digital)","Guía de tono visual","4 revisiones incluidas"]},
+  {title:"2 posts para Instagram",tag:"Redes sociales",details:["2 piezas para feed","Formatos cuadrado o 4:5","Adaptadas a tu identidad","Entrega en PNG listo para publicar","1 revisión por pieza"]},
+  {title:"4 posts para Instagram",tag:"Redes sociales",details:["4 piezas para feed","Formatos cuadrado o 4:5","Adaptadas a tu identidad","Entrega en PNG listo para publicar","1 revisión por pieza"]},
+  {title:"Stories y highlights",tag:"Redes sociales",details:["Hasta 6 stories diseñadas","Íconos de highlights personalizados (hasta 8)","Formato 9:16 optimizado","Entrega en PNG"]},
+  {title:"Edición de reels",tag:"Redes sociales",details:["Edición con material que aportás vos","Subtítulos, texto y transiciones","Música sin copyright","Formato 9:16 para IG/TikTok","Hasta 60 segundos","1 revisión incluida"]},
+  {title:"1 flyer de evento",tag:"Eventos",details:["Diseño de flyer digital","Formato cuadrado y/o story","Adaptado a tu identidad","Entrega en PNG alta resolución","1 revisión incluida"]},
+  {title:"2 flyers de evento",tag:"Eventos",details:["2 flyers (mismo evento o distintos)","Formato cuadrado y/o story","Entrega en PNG alta resolución","1 revisión por pieza"]},
+  {title:"1 producto de merch",tag:"Merch",details:["Diseño para un producto (remera, calco, gorra, etc.)","Adaptado a tu identidad","Archivo listo para imprenta","No incluye producción física","1 revisión incluida"]},
+  {title:"Hasta 3 productos de merch",tag:"Merch",details:["Diseño para hasta 3 productos distintos","Combiná remeras, calcos, gorras, etc.","Archivos listos para imprenta","No incluye producción física","1 revisión por pieza"]},
+];
+
+const selected={};
+function fmt(n){return "$"+n.toLocaleString("es-AR")}
+
+function render(){
+  let total=0;const lines=[];
+  Object.values(selected).forEach(i=>{if(i){total+=i.price;lines.push(i);}});
+  const sl=document.getElementById("sum-list");
+  sl.innerHTML=lines.length===0?'<span class="sum-empty">Nada seleccionado aún.</span>':lines.map(i=>`<div class="sum-row"><span>${i.label}</span><span>${fmt(i.price)}</span></div>`).join("");
+  document.getElementById("total").textContent=fmt(total);
+  const ww=document.getElementById("wa-wrap");
+  if(lines.length===0){ww.innerHTML='<p class="none-hint">Seleccioná al menos un ítem.</p>';}
+  else{
+    const msg=encodeURIComponent("Hola! Quiero armar un pack LUNESTATES con:\n\n"+lines.map(i=>"- "+i.label+" ("+fmt(i.price)+")").join("\n")+"\n\nTotal estimado: "+fmt(total)+"\n\n¿Coordinamos?");
+    ww.innerHTML=`<a class="wa-btn" href="https://wa.me/549TUNUMERO?text=${msg}" target="_blank"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>CONSULTAR POR WHATSAPP</a>`;
+  }
+}
+
+Object.entries(catalog).forEach(([gid,items])=>{
+  const g=document.getElementById(gid);
+  items.forEach(item=>{
+    const d=document.createElement("div");d.className="item";
+    d.innerHTML=`<div class="check"></div><div><div class="item-label">${item.label}</div><div class="item-price">${fmt(item.price)}</div></div>`;
+    d.addEventListener("click",()=>{
+      if(selected[item.id]){delete selected[item.id];d.classList.remove("sel");d.querySelector(".check").textContent="";}
+      else{selected[item.id]=item;d.classList.add("sel");d.querySelector(".check").textContent="✓";}
+      render();
+    });
+    g.appendChild(d);
+  });
+});
+
+const accCont=document.getElementById("accordions");
+infoItems.forEach(item=>{
+  const acc=document.createElement("div");acc.className="acc";
+  const btn=document.createElement("button");btn.className="acc-btn";
+  btn.innerHTML=`<div><div class="acc-name">${item.title}</div><div class="acc-tag">${item.tag}</div></div><span class="acc-arrow">⌄</span>`;
+  const body=document.createElement("div");body.className="acc-body";
+  body.innerHTML=item.details.map(d=>`<div class="det">${d}</div>`).join("");
+  btn.addEventListener("click",()=>{
+    const open=body.classList.toggle("open");
+    btn.querySelector(".acc-arrow").classList.toggle("open",open);
+  });
+  acc.appendChild(btn);acc.appendChild(body);accCont.appendChild(acc);
+});
+
+function switchTab(id,el){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  el.classList.add("active");
+}
+
+render();
+</script>
+</body>
+</html>
